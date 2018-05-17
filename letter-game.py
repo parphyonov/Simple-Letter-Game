@@ -52,7 +52,7 @@ def play(done):
         draw(secret_word, good_guesses, bad_guesses)
         guess = get_guess(secret_word, good_guesses, bad_guesses)
 
-        if guess in secret_word:
+        if guess[0] in secret_word:
             attempt = 0
             while attempt < guess[1]:
                 good_guesses.append(guess[0])
@@ -62,13 +62,13 @@ def play(done):
                 if letter not in good_guesses:
                     found = False
             if found:
-                print('You win! The word was {}'.format(secret_word))
+                print('You win! The word was {}\n\n'.format(secret_word))
                 done = True
         else:
             bad_guesses.append(guess[0])
             if len(bad_guesses) == 7:
                 draw(secret_word, good_guesses, bad_guesses)
-                print('You did\'nt guess it. My secret word was {}'.format(secret_word))
+                print('You did\'nt guess it. My secret word was {}\n\n'.format(secret_word))
                 done = True
 
         if done:
@@ -79,7 +79,7 @@ def play(done):
                 sys.exit()
 
 def welcome():
-    start = input('Press enter/return to start or enter Q to quit:\n')
+    start = input('Press enter/return to start or enter Q to quit:\n\n')
     if start.lower() != 'q':
         return True
     else:
@@ -89,10 +89,10 @@ def welcome():
 
 print('Welcome to Letter Guess Game!\n\n')
 
-# done = False
-#
-# while True:
-#     clear()
-#     welcome()
-#     play(done)
+done = False
+
+while True:
+    clear()
+    welcome()
+    play(done)
 get_guess('oxxxymoron', [], [])
