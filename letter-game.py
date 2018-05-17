@@ -1,52 +1,98 @@
 import random
+import os
+import sys
 
-words = 'amalgama eshkere'.split()
+def clear():
+    if os.name == 'nt':
+        # all windows machines report themselves as 'nt'
+        os.system('cls')
+    else:
+        os.system('clear')
 
-while True:
-    start = input('Press enter/return to start or enter Q to quit:\n')
-    if start.lower() == 'q':
-        break
+def draw(secret_word, good_guesses, bad_guesses):
+    clear()
+    print('Strikes {}/7'.format(len(bad_guesses)))
+    print('')
 
-    secret_word = words[random.randrange(0, len(words))]
-    # random_word = random.choice(words)
+    for letter in bad_guesses:
+        print(letter, end=' ')
+    print('\n\n')
 
-    bad_guesses = []
-    good_guesses = []
+    for letter in secret_word:
+        if letter in good_guesses:
+            print(letter, end='')
+        else:
+            print('_', end='')
 
-    while len(bad_guesses) < 7 and len(good_guesses) != len(list(secret_word)):
+    print('\n')
 
-        for letter in secret_word:
-            if letter in good_guesses:
-                print(letter, end='')
-            else:
-                print('_', end='')
-
-        print('')
-        print('Strikes {}/7'.format(len(bad_guesses)))
-        print('')
-
+def get_guess(secret_word, good_guesses, bad_guesses):
+    while True:
         guess = input('Guess a letter: ').lower()
         num_or = secret_word.count(guess)
 
         if len(guess) != 1:
             print('You can only guess a single letter ')
-            continue
         elif guess in bad_guesses or guess in good_guesses:
             print('You\'ve already guessed that letter!')
-            continue
         elif not guess.isalpha():
             print('You can only guess letters!')
-            continue
+        else:
+            return [guess, num_or]
+
+def play(done):
+    clear()
+    words = 'each hunter would like to know where the peacock sits'.split()
+    secret_word = words[random.randrange(0, len(words))]
+    # random_word = random.choice(words)
+    good_guesses = []
+    bad_guesses = []
+
+    while True:
+        draw(secret_word, good_guesses, bad_guesses)
+        guess = get_guess(secret_word, good_guesses, bad_guesses)
 
         if guess in secret_word:
             attempt = 0
-            while attempt < num_or:
-                good_guesses.append(guess)
+            while attempt < guess[1]:
+                good_guesses.append(guess[0])
                 attempt += 1
-            if len(good_guesses) == len(list(secret_word)):
+            found = True
+            for letter in secret_word:
+                if letter not in good_guesses:
+                    found = False
+            if found:
                 print('You win! The word was {}'.format(secret_word))
-                break
+                done = True
+        else:
+            bad_guesses.append(guess[0])
+            if len(bad_guesses) == 7:
+                draw(secret_word, good_guesses, bad_guesses)
+                print('You did\'nt guess it. My secret word was {}'.format(secret_word))
+                done = True
+
+        if done:
+            start = input('Press enter/return to start or enter Q to quit:\n')
+            if start.lower() != 'q':
+                play(done=False)
             else:
-                bad_guesses.append(guess)
+                sys.exit()
+
+def welcome():
+    start = input('Press enter/return to start or enter Q to quit:\n')
+    if start.lower() != 'q':
+        return True
     else:
-        print('You did\'nt guess it. My secret word was {}'.format(secret_word))
+        print('Bye!')
+        sys.exit()
+
+
+print('Welcome to Letter Guess Game!\n\n')
+
+# done = False
+#
+# while True:
+#     clear()
+#     welcome()
+#     play(done)
+get_guess('oxxxymoron', [], [])
